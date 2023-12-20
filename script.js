@@ -49,7 +49,7 @@ const colorMap = {
 };
 
 const paddle = {
-    x: canvas.width / 2 - BRICK_WIDTH / 2,
+    x: canvas.width / 2 - PADDLE_WIDTH / 2,
     y: 440,
     width: PADDLE_WIDTH,
     height: PADDLE_HEIGHT,
@@ -316,3 +316,86 @@ document.addEventListener('keydown', function (e) {
         resetGame();
     }
 });
+
+//////////////////////////////
+/// MOBILE SUPPORT
+/////////////////////////
+
+canvas.addEventListener('touchstart', handleTouchStart, false);
+canvas.addEventListener('touchmove', handleTouchMove, false);
+canvas.addEventListener('touchend', handleTouchEnd, false);
+let gameStarted = false;
+
+// Listen for touchstart events on the canvas
+canvas.addEventListener('touchstart', function (e) {
+    // Get the touch coordinates
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+
+    // Adjust touch coordinates for canvas position
+    const canvasRect = canvas.getBoundingClientRect();
+    const canvasScaleX = canvas.width / canvasRect.width; // scale factor for width
+    const canvasScaleY = canvas.height / canvasRect.height; // scale factor for height
+
+    const canvasTouchX = (touchX - canvasRect.left) * canvasScaleX;
+    const canvasTouchY = (touchY - canvasRect.top) * canvasScaleY;
+
+    // Check if the touch is within the paddle's bounds
+    if (
+        canvasTouchX >= paddle.x &&
+        canvasTouchX <= paddle.x + paddle.width &&
+        canvasTouchY >= paddle.y &&
+        canvasTouchY <= paddle.y + paddle.height
+    ) {
+        // If the game hasn't started, start the game
+        if (!gameStarted) {
+            gameStarted = true;
+            resetBall(); // Start the ball movement
+            loop(); // Start the game loop
+        }
+    }
+}, false);
+
+let lastTouchX;
+
+function handleTouchStart(e) {
+    const touch = e.touches[0];
+    lastTouchX = touch.clientX;
+    e.preventDefault(); // Prevent scrolling when touching the canvas
+}
+
+function handleTouchMove(e) {
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - lastTouchX;
+    lastTouchX = touch.clientX;
+
+    // Move paddle based on the change in touch position
+    paddle.x += deltaX;
+
+    // Prevent the paddle from going out of bounds
+    if (paddle.x < WALL_WIDTH) {
+        paddle.x = WALL_WIDTH;
+    } else if (paddle.x + paddle.width > canvas.width - WALL_WIDTH) {
+        paddle.x = canvas.width - WALL_WIDTH - paddle.width;
+    }
+
+    e.preventDefault();
+}
+
+function handleTouchEnd(e) {
+    // Stop paddle movement when touch ends
+    paddle.dx = 0;
+    e.preventDefault();
+}
+
+window.addEventListener('deviceorientation', handleTilt);
+
+function handleTilt(e) {
+    // Get the device tilt from the event
+    const gamma = e.gamma; // Represents the left to right tilt in degrees
+
+    // Set the paddle velocity based on the tilt
+    // You may need to adjust the sensitivity to get the desired responsiveness
+    const sensitivity = 1.5;
+    paddle.dx = gamma * sensitivity;
+}
