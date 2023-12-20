@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="breakout.html" />
+    <None Include="index.html" />
     <None Include="script.js" />
     <None Include="style.css" />
   </ItemGroup>
