@@ -57,7 +57,7 @@ const paddle = {
 };
 
 const ball = {
-    x: 130,
+    x: canvas.width / 2,
     y: 260,
     width: 5,
     height: 5,
@@ -66,9 +66,29 @@ const ball = {
     dy: 0  // Ball y velocity
 };
 
-// Game Loop
-let score = 0;
-let isGameOver = false;
+/////////////////////////////////
+/// MUTATORS AND ACCESSORS
+////////////////////////////
+
+function setPaddlePosition(horizontalPosition, verticalPosition) {
+    paddle.x = horizontalPosition;
+    paddle.y = verticalPosition;
+}
+
+function setPaddleWidth(newWidth) { paddle.width = newWidth; }
+
+
+function setBallPosition(horizontalPosition, verticalPosition) {
+    ball.x = horizontalPosition;
+    ball.y = verticalPosition;
+}
+
+function setBallSpeed(newSpeed) { ball.speed = newSpeed; }
+
+
+/////////////////////////////////
+/// GAME FUNCTIONS
+////////////////////////////
 
 function createGameGrid() {
     for (let row = 0; row < LVL1.length; row++) {
@@ -86,7 +106,7 @@ function createGameGrid() {
     }
 }
 
-// check for collision between two objects using axis-aligned bounding box (AABB)
+// Checks for collision between two objects using axis-aligned bounding box (AABB)
 function collides(obj1, obj2) {
     return obj1.x < obj2.x + obj2.width &&
         obj1.x + obj1.width > obj2.x &&
@@ -143,7 +163,9 @@ function resetBall() {
 }
 
 function resetGame() {
-    // ...
+    // Reset Score
+    score = 0;
+    updateScore();
 
     // Reset the game over flag
     isGameOver = false;
@@ -154,128 +176,56 @@ function resetGame() {
 
     // Repopulate the bricks array for a new game
     bricks.length = 0; // Clear the existing bricks;
-    createGameGrid();
+    createGameGrid(); 
 
-    // Reset Score
-    score = 0;
-    updateScore();
-
-    // Reset Ball
+    // Reset Ball Position/Velocity
     resetBall();
 
     // Restart the game loop
     requestAnimationFrame(loop);
 }
 
+//////////////////////////////
+/// GAME LOOP
+/////////////////////////
+
+let score = 0;
+let isGameOver = false;
+
 createGameGrid();
 loop();
 function loop() {
     if (!isGameOver) {
+        // Ensure next frame is scheduled before current frame logic is processed for smoother animations
         requestAnimationFrame(loop);
         context.clearRect(0, 0, canvas.width, canvas.height);
 
-        // move paddle by it's velocity
-        paddle.x += paddle.dx;
+        // Move Paddle
+        movePaddle();
 
-        // prevent paddle from going through walls
-        if (paddle.x < WALL_WIDTH) {
-            paddle.x = WALL_WIDTH
-        }
-        else if (paddle.x + paddle.width > canvas.width - WALL_WIDTH) {
-            paddle.x = canvas.width - WALL_WIDTH - paddle.width;
-        }
+        // Move Ball
+        moveBall()
 
-        // move ball by it's velocity
-        ball.x += ball.dx;
-        ball.y += ball.dy;
+        // Check Ball Collision
+        checkBallPaddleCollision();
+        checkBallBrickCollision();
 
-        // prevent ball from going through walls by changing its velocity
-        // left & right walls
-        if (ball.x < WALL_WIDTH) {
-            ball.x = WALL_WIDTH;
-            ball.dx *= -1;
-        }
-        else if (ball.x + ball.width > canvas.width - WALL_WIDTH) {
-            ball.x = canvas.width - WALL_WIDTH - ball.width;
-            ball.dx *= -1;
-        }
-        // top wall
-        if (ball.y < WALL_WIDTH) {
-            ball.y = WALL_WIDTH;
-            ball.dy *= -1;
-        }
+        // Draw Walls
+        drawWalls();
 
-        // reset ball if it goes below the screen
-        if (ball.y > canvas.height) {
-            ball.x = 130;
-            ball.y = 260;
-            ball.dx = 0;
-            ball.dy = 0;
+        // Draw Ball
+        drawBall();
 
-            isGameOver = true;
-        }
+        // Draw Bricks
+        drawBricks();
 
-        // check to see if ball collides with paddle. if they do change y velocity
-        if (collides(ball, paddle)) {
-            ball.dy *= -1;
+        // Draw Paddle
+        drawPaddle();
 
-            // move ball above the paddle otherwise the collision will happen again
-            // in the next frame
-            ball.y = paddle.y - ball.height;
-        }
-
+        // Check Remaining Bricks
         if (bricks.length == 0) {
             isGameOver = true;
         }
-
-        // check to see if ball collides with a brick. if it does, remove the brick
-        // and change the ball velocity based on the side the brick was hit on
-        for (let i = 0; i < bricks.length; i++) {
-            const brick = bricks[i];
-
-            if (collides(ball, brick)) {
-                // remove brick from the bricks array
-                bricks.splice(i, 1);
-
-                // increment score
-                score++;
-                updateScore();
-
-                // ball is above or below the brick, change y velocity
-                // account for the balls speed since it will be inside the brick when it collides
-                if (ball.y + ball.height - ball.speed <= brick.y ||
-                    ball.y >= brick.y + brick.height - ball.speed) {
-                    ball.dy *= -1;
-                }
-                // ball is on either side of the brick, change x velocity
-                else {
-                    ball.dx *= -1;
-                }
-
-                break;
-            }
-        }
-
-        // Draw walls
-        context.fillStyle = colorMap['P'];
-        context.fillRect(0, 0, canvas.width, WALL_WIDTH);
-        context.fillRect(0, 0, WALL_WIDTH, canvas.height);
-        context.fillRect(canvas.width - WALL_WIDTH, 0, WALL_WIDTH, canvas.height);
-
-        // Draw ball if it's moving
-        if (ball.dx || ball.dy) {
-            context.fillRect(ball.x, ball.y, ball.width, ball.height);
-        }
-
-        // draw bricks
-        bricks.forEach(function (brick) {
-            context.fillStyle = brick.color;
-            context.fillRect(brick.x, brick.y, brick.width, brick.height);
-        });
-
-        // draw paddle
-        context.fillStyle = colorMap['P'];
-        context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
     }
     else {
         if (bricks.length == 0) {
@@ -287,18 +237,118 @@ function loop() {
     }
 }
 
+//////////////////////////////
+/// GAME FUNCTIONS
+/////////////////////////
+
+function movePaddle() {
+    paddle.x += paddle.dx;
+    // Collision with walls
+    if (paddle.x < WALL_WIDTH) {
+        paddle.x = WALL_WIDTH;
+    }
+    else if (paddle.x + paddle.width > canvas.width - WALL_WIDTH) {
+        paddle.x = canvas.width - WALL_WIDTH - paddle.width;
+    }
+}
+
+function moveBall() {
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // Wall collision logic
+    // Left & Right walls
+    if (ball.x < WALL_WIDTH || ball.x + ball.width > canvas.width - WALL_WIDTH) {
+        ball.dx *= -1;
+    }
+    // Top wall
+    if (ball.y < WALL_WIDTH) {
+        ball.dy *= -1;
+    }
+
+    // Reset ball if it goes below the screen
+    if (ball.y > canvas.height) {
+        isGameOver = true;
+    }
+}
+function checkBallPaddleCollision() {
+    // If ball collides with paddle, change y velocity
+    if (collides(ball, paddle)) {
+        ball.dy *= -1;
+        ball.y = paddle.y - ball.height;
+    }
+}
+
+function checkBallBrickCollision() {
+    // If ball collides with a brick, remove the brick and change the ball velocity based on the side the brick was hit on
+    for (let i = 0; i < bricks.length; i++) {
+        const brick = bricks[i];
+
+        if (collides(ball, brick)) {
+            // Remove brick from the bricks array
+            bricks.splice(i, 1);
+
+            // Increment score
+            score++;
+            updateScore();
+
+            // Above or Below the brick, change y velocity
+            // Account for the balls speed since it will be inside the brick when it collides
+            if (ball.y + ball.height - ball.speed <= brick.y ||
+                ball.y >= brick.y + brick.height - ball.speed) {
+                ball.dy *= -1;
+            }
+            // ball is on either side of the brick, change x velocity
+            else {
+                ball.dx *= -1;
+            }
+            break;
+        }
+    }
+}
+
+function drawWalls() {
+    context.fillStyle = colorMap['P'];
+    context.fillRect(0, 0, canvas.width, WALL_WIDTH);
+    context.fillRect(0, 0, WALL_WIDTH, canvas.height);
+    context.fillRect(canvas.width - WALL_WIDTH, 0, WALL_WIDTH, canvas.height);
+}
+
+function drawBall() {
+    if (ball.dx || ball.dy) {
+        context.fillRect(ball.x, ball.y, ball.width, ball.height);
+    }
+}
+
+function drawBricks() {
+    bricks.forEach(function (brick) {
+        context.fillStyle = brick.color;
+        context.fillRect(brick.x, brick.y, brick.width, brick.height);
+    });
+}
+
+function drawPaddle() {
+    context.fillStyle = colorMap['P'];
+    context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+}
+
 
 //////////////////////////////
 /// DIRECTIONAL MOTION
 /////////////////////////
 
+let leftArrowPressed = false;
+let rightArrowPressed = false;
 document.addEventListener('keydown', function (e) {
     if (e.key === 'ArrowLeft') {
+        leftArrowPressed = true;
         paddle.dx = -3;
     }
     if (e.key === 'ArrowRight') {
+        rightArrowPressed = true;
         paddle.dx = 3;
     }
+
     if (ball.dx === 0 && ball.dy === 0 && e.key === ' ') {
         resetBall();
     }
@@ -306,7 +356,14 @@ document.addEventListener('keydown', function (e) {
 
 // Stop paddle movement when keys are released
 document.addEventListener('keyup', function (e) {
-    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+    if (e.key === 'ArrowLeft') {
+        leftArrowPressed = false;
+    }
+    if (e.key === 'ArrowRight') {
+        rightArrowPressed = false;
+    }
+
+    if (!leftArrowPressed && !rightArrowPressed) {
         paddle.dx = 0;
     }
 });
