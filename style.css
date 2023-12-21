@@ -4,10 +4,13 @@ html, body {
 }
 
 body {
-    background: black;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background: black;
 }
 
 #game-container {
@@ -24,7 +27,7 @@ body {
     margin-bottom: 10px;
 }
 
-#game-over, #winner {
+#game-over, #winner, #pwr {
     display: none; /* Initially hidden; set to block or flex when the game is over */
     position: absolute;
     top: 50%;
@@ -35,6 +38,18 @@ body {
     font-size: 2em; /* Adjust as needed */
     text-align: center;
     z-index: 10; /* Make sure this is above the canvas layer */
+}
+
+#fpsCounter {
+    color: red;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 5px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
 }
 
 p {
@@ -75,4 +90,47 @@ p {
         text-shadow: 0 0 20px green;
         transform: translate(-2px, 1px);
     }
+}
+
+/* POWERUP CSS TEXT EFFECTS */
+
+:root {
+    --color-background: #000119;
+    --stroke-width: calc(1em / 16);
+    --font-size: 40px;
+    --font-weight: 700;
+    --letter-spacing: calc(1em / 8);
+}
+
+* {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#powerupText {
+    position: absolute;
+    top: 10%; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    display: none; /* Initially hidden */
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-image: -webkit-gradient(linear, left top, right top, from(#09f1b8), color-stop(#00a2ff), color-stop(#ff00d2), to(#fed90f));
+    background-image: -o-linear-gradient(left, #09f1b8, #00a2ff, #ff00d2, #fed90f);
+    background-image: linear-gradient(to right, #09f1b8, #00a2ff, #ff00d2, #fed90f);
+    padding: 10px;
+    color: #000119;
+    color: var(--color-background);
+    font-family: Poppins, sans-serif;
+    font-size: 30vmin;
+    font-size: var(--font-size);
+    font-weight: 700;
+    font-weight: var(--font-weight);
+    letter-spacing: calc(1em / 8);
+    letter-spacing: 10px;
+    padding: calc(--stroke-width / 2);
+    -webkit-text-stroke-color: transparent;
+    -webkit-text-stroke-width: calc(1em / 16);
+    -webkit-text-stroke-width: var(--stroke-width);
 }
