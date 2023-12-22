@@ -23,10 +23,39 @@ body {
     max-height: 100vh;
 }
 
+#top-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; /* Adjust this as needed */
+    color: white;
+    font-family: 'Press Start 2P', cursive; /* Assuming you're using this font */
+    background: black;
+    padding: 10px;
+    font-size: 16px; /* Adjust size as needed */
+}
+
 #score {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 0;
     font-family: 'Press Start 2P', cursive;
     color: white;
-    margin-bottom: 10px;
+    padding: 5px;
+    margin-right: 120px;
+    z-index: 5;
+}
+
+#level {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 0;
+    font-family: 'Press Start 2P', cursive;
+    color: white;
+    padding: 5px;
+
     z-index: 5;
 }
 

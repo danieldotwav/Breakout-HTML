@@ -143,6 +143,7 @@ function setBallSize(newSize) {
 /// GAME FUNCTIONS
 ////////////////////////////
 
+let currentLevel = 1;
 function createGameGrid(level) {
     for (let row = 0; row < level.length; row++) {
         for (let col = 0; col < level[row].length; col++) {
@@ -159,6 +160,27 @@ function createGameGrid(level) {
             }
         }
     }
+    setLevelNumber(level);
+    updateLevelText(currentLevel);
+}
+
+function setLevelNumber(level) {
+    switch (level) {
+        case LVL1:
+            currentLevel = 1;
+            break;
+        case LVL2:
+            currentLevel = 2;
+            break;
+        case LVL3:
+            currentLevel = 3;
+            break;
+    }
+}
+
+function updateLevelText(newLevel) {
+    var levelElement = document.getElementById('level');
+    levelElement.textContent = 'LEVEL ' + newLevel;
 }
 
 // Check for collision between two objects using axis-aligned bounding box (AABB)
@@ -254,11 +276,13 @@ let previousBallSpeed = 0;
 
 let score = 0;
 let isGameOver = false;
+let isPaused = false;
 
-createGameGrid(LVL3);
+createGameGrid(LVL2);
 loop();
+
 function loop() {
-    if (!isGameOver) {
+    if (!isGameOver && !isPaused) {
         // Ensure next frame is scheduled before current frame logic is processed for smoother animations
         requestAnimationFrame(loop);
         context.clearRect(0, 0, canvas.width, canvas.height);
@@ -288,6 +312,10 @@ function loop() {
             isGameOver = true;
         }
     }
+    else if (isPaused) {
+        // Render the pause menu
+        showPauseMenu();
+    }
     else {
         if (bricks.length == 0) {
             showWinScreen();
@@ -296,6 +324,33 @@ function loop() {
             showGameOver();
         }
     }
+}
+
+function showPauseMenu() {
+    // Create an offscreen canvas
+    let offscreenCanvas = document.createElement('canvas');
+    offscreenCanvas.width = canvas.width;
+    offscreenCanvas.height = canvas.height;
+    let offscreenContext = offscreenCanvas.getContext('2d');
+
+    // Draw the current game state to the offscreen canvas
+    offscreenContext.drawImage(canvas, 0, 0);
+
+    // Draw the blurred image back to the main canvas
+    context.drawImage(offscreenCanvas, 0, 0);
+
+    // Semi-transparent overlay
+    context.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the pause menu text
+
+    context.fillStyle = '#FFFFFF';
+    context.font = '18px "Press Start 2P", cursive';
+    context.textAlign = 'center';
+    context.fillText('Game Paused', canvas.width / 2, 150);
+    context.fillText('Press Enter to Resume', canvas.width / 2, 200);
+    context.fillText('Press R to Restart', canvas.width / 2, 250);
 }
 
 //////////////////////////////
@@ -415,6 +470,10 @@ function displayPowerupText(text) {
     setTimeout(() => powerupTextElement.style.display = 'none', 5000); // Hide the text after 5 seconds
 }
 
+function displayLevelText(currentLevel) {
+
+}
+
 function checkForRandomPowerupChance() {
     if (Math.random() < POWERUP_CHANCE && !powerupActive && powerupCooldown === 0) {
         powerupActive = true; // Global flag indicating a powerup is active
@@ -495,13 +554,14 @@ function drawPaddle() {
     context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 }
 
-function resetGame() {
+function resetGame(LevelSelection) {
     // Reset Score
     score = 0;
     updateScore();
 
     // Reset the game state flags
     isGameOver = false;
+    isPaused = false;
     slowBallActive = false;
     widePaddleActive = false;
     powerupActive = false;
@@ -518,7 +578,7 @@ function resetGame() {
 
     // Repopulate the bricks array for a new game
     bricks.length = 0; // Clear the existing bricks;
-    createGameGrid();
+    createGameGrid(LevelSelection);
 
     // Reset Ball Position/Velocity
     resetBall();
@@ -565,7 +625,17 @@ document.addEventListener('keyup', function (e) {
 
 document.addEventListener('keydown', function (e) {
     if (e.key === " " && isGameOver) { // If spacebar is pressed and the game is over
-        resetGame();
+        resetGame(LVL1);
+    }
+});
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+        isPaused = !isPaused;
+        if (!isPaused) {
+            // Resume the game
+            requestAnimationFrame(loop);
+        }
     }
 });
 
