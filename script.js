@@ -230,7 +230,7 @@ function resetPaddle() {
 /// GAME LOOP
 /////////////////////////
 
-const POWERUP_CHANCE = 1; // 5% chance for powerup
+const POWERUP_CHANCE = 0.2; // 10% chance for powerup
 const POWERUP_COOLDOWN = 3;
 
 const WIDE_BAR_DURATION = 6;
