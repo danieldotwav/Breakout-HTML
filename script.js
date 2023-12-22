@@ -261,7 +261,7 @@ function resetPaddle() {
 /// GAME LOOP
 /////////////////////////
 
-const POWERUP_CHANCE = 0.2; // 10% chance for powerup
+const POWERUP_CHANCE = 1;
 const POWERUP_COOLDOWN = 3;
 
 const WIDE_BAR_DURATION = 6;
@@ -364,16 +364,18 @@ function showPauseMenu() {
 }
 
 function showStartMessage() {
-    // Clear the canvas or draw over the existing frame
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    // Create an offscreen canvas
+    let offscreenCanvas = document.createElement('canvas');
+    offscreenCanvas.width = canvas.width;
+    offscreenCanvas.height = canvas.height;
+    let offscreenContext = offscreenCanvas.getContext('2d');
 
-    // Optional: Add a background or overlay if needed
-    // context.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    // context.fillRect(0, 0, canvas.width, canvas.height);
+    // Draw the current game state to the offscreen canvas
+    offscreenContext.drawImage(canvas, 0, 0);
 
     // Set text properties
     context.fillStyle = '#FFFFFF'; // White color for text
-    context.font = '24px "Press Start 2P", cursive'; // Your desired font
+    context.font = '18px "Press Start 2P", cursive'; // Your desired font
     context.textAlign = 'center';
     context.textBaseline = 'middle'; // Align text in the middle vertically
 
@@ -546,7 +548,6 @@ function updatePowerupGauge() {
                 setBallSize(ORIGINAL_BALL_SIZE); // Reset ball speed
                 bigBallActive = false;
             }
-
             powerupCooldown = POWERUP_COOLDOWN;
         }
     }

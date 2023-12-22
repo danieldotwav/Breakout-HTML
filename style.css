@@ -83,7 +83,7 @@ body {
 
 #powerupText {
     position: absolute;
-    left:70%;
+    top: 75px;
     display: none; /* Initially hidden */
     z-index: 10;
 
@@ -92,14 +92,12 @@ body {
     background-image: -webkit-gradient(linear, left top, right top, from(#09f1b8), color-stop(#00a2ff), color-stop(#ff00d2), to(#fed90f));
     background-image: -o-linear-gradient(left, #09f1b8, #00a2ff, #ff00d2, #fed90f);
     background-image: linear-gradient(to right, #09f1b8, #00a2ff, #ff00d2, #fed90f);
-    padding: 10px;
+    padding: 5px;
     color: #000119;
     color: var(--color-background);
     font-family: Poppins, sans-serif;
-    font-size: 30vmin;
-    font-size: var(--font-size);
+    font-size: 35px;
     font-weight: 700;
-    font-weight: var(--font-weight);
     letter-spacing: calc(1em / 8);
     letter-spacing: 10px;
     padding: calc(--stroke-width / 2);
