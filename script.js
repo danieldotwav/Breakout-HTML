@@ -25,7 +25,6 @@ canvas.height = CANVAS_HEIGHT;
 
 const context = canvas.getContext('2d');
 
-/*
 const LVL1 = [
     [],
     [],
@@ -42,7 +41,6 @@ const LVL1 = [
     ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
     ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F']
 ];
-*/
 
 const LVL2 = [
     [],
@@ -61,15 +59,15 @@ const LVL3 = [
     [],
     [],
     [],
-    ['X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'O', 'Y', 'O', 'X', 'X', 'O', 'Y', 'O', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'X', 'X', 'O', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'O', 'Y', 'O', 'X', 'X', 'X', 'O', 'Y', 'O', 'X', 'X'],
     ['X', 'X', 'O', 'Y', 'G', 'Y', 'O', 'X', 'O', 'Y', 'G', 'Y', 'O', 'X'],
     ['X', 'O', 'Y', 'G', 'L', 'G', 'Y', 'O', 'Y', 'G', 'L', 'G', 'Y', 'O'],
     ['O', 'Y', 'G', 'L', 'B', 'L', 'G', 'Y', 'G', 'L', 'B', 'L', 'G', 'Y'],
     ['X', 'O', 'Y', 'G', 'L', 'G', 'Y', 'O', 'Y', 'G', 'L', 'G', 'Y', 'O'],
     ['X', 'X', 'O', 'Y', 'G', 'Y', 'O', 'X', 'O', 'Y', 'G', 'Y', 'O', 'X'],
-    ['X', 'X', 'X', 'O', 'Y', 'O', 'X', 'X', 'O', 'Y', 'O', 'X', 'X', 'X'],
-    ['X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'O', 'Y', 'O', 'X', 'X', 'X', 'O', 'Y', 'O', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'X', 'X', 'O', 'X', 'X', 'X'],
 ];
 
 // Map color names to characters for ease-of-change
@@ -144,24 +142,6 @@ function setBallSize(newSize) {
 /////////////////////////////////
 /// GAME FUNCTIONS
 ////////////////////////////
-
-/*
-function createGameGrid() {
-    for (let row = 0; row < LVL1.length; row++) {
-        for (let col = 0; col < LVL1[row].length; col++) {
-            const colorCode = LVL1[row][col];
-
-            bricks.push({
-                x: WALL_WIDTH + (BRICK_WIDTH + BRICK_GAP) * col,
-                y: WALL_WIDTH + (BRICK_HEIGHT + BRICK_GAP) * row,
-                color: colorMap[colorCode],
-                width: BRICK_WIDTH,
-                height: BRICK_HEIGHT
-            });
-        }
-    }
-}
-*/
 
 function createGameGrid(level) {
     for (let row = 0; row < level.length; row++) {
