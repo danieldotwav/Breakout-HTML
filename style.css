@@ -14,20 +14,23 @@ body {
 }
 
 #game-container {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    height: auto;
+    max-height: 100vh;
 }
 
 #score {
     font-family: 'Press Start 2P', cursive;
     color: white;
     margin-bottom: 10px;
+    z-index: 5;
 }
 
-#game-over, #winner, #pwr {
+#game-over, #winner {
     display: none; /* Initially hidden; set to block or flex when the game is over */
     position: absolute;
     top: 50%;
@@ -38,6 +41,42 @@ body {
     font-size: 2em; /* Adjust as needed */
     text-align: center;
     z-index: 10; /* Make sure this is above the canvas layer */
+}
+
+#pwr {
+    display: block; /* Initially hidden; set to block or flex when the game is over */
+    position: relative;
+    color: white; /* Or any color you want */
+    font-family: 'Press Start 2P', cursive;
+    font-size: 2em; /* Adjust as needed */
+    text-align: center;
+}
+
+#powerupText {
+    position: absolute;
+    left:70%;
+    display: none; /* Initially hidden */
+    z-index: 10;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    background-image: -webkit-gradient(linear, left top, right top, from(#09f1b8), color-stop(#00a2ff), color-stop(#ff00d2), to(#fed90f));
+    background-image: -o-linear-gradient(left, #09f1b8, #00a2ff, #ff00d2, #fed90f);
+    background-image: linear-gradient(to right, #09f1b8, #00a2ff, #ff00d2, #fed90f);
+    padding: 10px;
+    color: #000119;
+    color: var(--color-background);
+    font-family: Poppins, sans-serif;
+    font-size: 30vmin;
+    font-size: var(--font-size);
+    font-weight: 700;
+    font-weight: var(--font-weight);
+    letter-spacing: calc(1em / 8);
+    letter-spacing: 10px;
+    padding: calc(--stroke-width / 2);
+    -webkit-text-stroke-color: transparent;
+    -webkit-text-stroke-width: calc(1em / 16);
+    -webkit-text-stroke-width: var(--stroke-width);
 }
 
 #fpsCounter {
@@ -107,30 +146,3 @@ p {
     box-sizing: border-box;
 }
 
-#powerupText {
-    position: absolute;
-    top: 10%; /* Adjust as needed */
-    left: 50%;
-    transform: translateX(-50%); /* Center horizontally */
-    display: none; /* Initially hidden */
-
-    -webkit-background-clip: text;
-    background-clip: text;
-    background-image: -webkit-gradient(linear, left top, right top, from(#09f1b8), color-stop(#00a2ff), color-stop(#ff00d2), to(#fed90f));
-    background-image: -o-linear-gradient(left, #09f1b8, #00a2ff, #ff00d2, #fed90f);
-    background-image: linear-gradient(to right, #09f1b8, #00a2ff, #ff00d2, #fed90f);
-    padding: 10px;
-    color: #000119;
-    color: var(--color-background);
-    font-family: Poppins, sans-serif;
-    font-size: 30vmin;
-    font-size: var(--font-size);
-    font-weight: 700;
-    font-weight: var(--font-weight);
-    letter-spacing: calc(1em / 8);
-    letter-spacing: 10px;
-    padding: calc(--stroke-width / 2);
-    -webkit-text-stroke-color: transparent;
-    -webkit-text-stroke-width: calc(1em / 16);
-    -webkit-text-stroke-width: var(--stroke-width);
-}

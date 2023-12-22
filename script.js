@@ -1,3 +1,8 @@
+// TODO:
+// 1. Fix overlapping text powerup text on mobile
+// 2. Lower powerup chance
+// 3. Increase the interval between powerups
+
 const CANVAS_WIDTH = 400;
 const CANVAS_HEIGHT = 500;
 
@@ -20,6 +25,7 @@ canvas.height = CANVAS_HEIGHT;
 
 const context = canvas.getContext('2d');
 
+/*
 const LVL1 = [
     [],
     [],
@@ -35,6 +41,35 @@ const LVL1 = [
     ['L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L'],
     ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B'],
     ['F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F', 'F']
+];
+*/
+
+const LVL2 = [
+    [],
+    [],
+    ['C', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'R', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'O', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'Y', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'G', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'L', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'B', 'X', 'X', 'X', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'X', 'X', 'X', 'F', 'X', 'X', 'X', 'X', 'X', 'X'],
+];
+
+const LVL3 = [
+    [],
+    [],
+    [],
+    ['X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'O', 'Y', 'O', 'X', 'X', 'O', 'Y', 'O', 'X', 'X', 'X'],
+    ['X', 'X', 'O', 'Y', 'G', 'Y', 'O', 'X', 'O', 'Y', 'G', 'Y', 'O', 'X'],
+    ['X', 'O', 'Y', 'G', 'L', 'G', 'Y', 'O', 'Y', 'G', 'L', 'G', 'Y', 'O'],
+    ['O', 'Y', 'G', 'L', 'B', 'L', 'G', 'Y', 'G', 'L', 'B', 'L', 'G', 'Y'],
+    ['X', 'O', 'Y', 'G', 'L', 'G', 'Y', 'O', 'Y', 'G', 'L', 'G', 'Y', 'O'],
+    ['X', 'X', 'O', 'Y', 'G', 'Y', 'O', 'X', 'O', 'Y', 'G', 'Y', 'O', 'X'],
+    ['X', 'X', 'X', 'O', 'Y', 'O', 'X', 'X', 'O', 'Y', 'O', 'X', 'X', 'X'],
+    ['X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'X', 'O', 'X', 'X', 'X', 'X'],
 ];
 
 // Map color names to characters for ease-of-change
@@ -110,6 +145,7 @@ function setBallSize(newSize) {
 /// GAME FUNCTIONS
 ////////////////////////////
 
+/*
 function createGameGrid() {
     for (let row = 0; row < LVL1.length; row++) {
         for (let col = 0; col < LVL1[row].length; col++) {
@@ -122,6 +158,25 @@ function createGameGrid() {
                 width: BRICK_WIDTH,
                 height: BRICK_HEIGHT
             });
+        }
+    }
+}
+*/
+
+function createGameGrid(level) {
+    for (let row = 0; row < level.length; row++) {
+        for (let col = 0; col < level[row].length; col++) {
+            const colorCode = level[row][col];
+
+            if (colorCode !== 'X') {
+                bricks.push({
+                    x: WALL_WIDTH + (BRICK_WIDTH + BRICK_GAP) * col,
+                    y: WALL_WIDTH + (BRICK_HEIGHT + BRICK_GAP) * row,
+                    color: colorMap[colorCode],
+                    width: BRICK_WIDTH,
+                    height: BRICK_HEIGHT
+                });
+            }
         }
     }
 }
@@ -195,11 +250,21 @@ function resetPaddle() {
 /// GAME LOOP
 /////////////////////////
 
+const POWERUP_CHANCE = 1; // 5% chance for powerup
+const POWERUP_COOLDOWN = 3;
+
+const WIDE_BAR_DURATION = 6;
+const SLOW_BALL_DURATION = 4;
+const BIG_BALL_DURATION = 6;
+
 // Global flags for each powerup
 let slowBallActive = false;
 let widePaddleActive = false;
 let powerupActive = false;
 let bigBallActive = false;
+
+let powerupDuration = 0;
+let powerupCooldown = POWERUP_COOLDOWN;
 
 let widePaddleDuration = 0;
 let slowBallDuration = 0;
@@ -210,7 +275,7 @@ let previousBallSpeed = 0;
 let score = 0;
 let isGameOver = false;
 
-createGameGrid();
+createGameGrid(LVL3);
 loop();
 function loop() {
     if (!isGameOver) {
@@ -257,10 +322,7 @@ function loop() {
 /// GAME FUNCTIONS
 /////////////////////////
 
-const POWERUP_CHANCE = 0.10; // 10% chance for powerup
-const POWERUP_DURATION = 7;
-
-// Add: 1. AI OVERRIDE 2. BIG BALL
+// Add: 1. AI OVERRIDE 2. MULTI-BALL
 const POWERUP_TYPES = {
     WIDER_BAR: 'wider_bar',
     SLOW_BALL: 'slow_ball',
@@ -316,8 +378,11 @@ function checkBallBrickCollision() {
             bricks.splice(i, 1);
 
             // Increment score
-            score++;
+            ++score;
             updateScore();
+
+            // Decrement Powerup Cooldown
+            --powerupCooldown;
 
             // Update Powerup Gauge
             updatePowerupGauge();
@@ -371,55 +436,55 @@ function displayPowerupText(text) {
 }
 
 function checkForRandomPowerupChance() {
-    if (Math.random() < POWERUP_CHANCE && !powerupActive) {
+    if (Math.random() < POWERUP_CHANCE && !powerupActive && powerupCooldown === 0) {
         powerupActive = true; // Global flag indicating a powerup is active
         let selectedPowerup = getRandomPowerup();
 
         // Activate the selected powerup and set the respective flag
         if (selectedPowerup === POWERUP_TYPES.SLOW_BALL && !slowBallActive) {
-            slowBallDuration = 3;
+            powerupDuration = SLOW_BALL_DURATION;
             previousBallSpeed = ball.speed;
             setBallSpeed(ball.speed / 2);
             slowBallActive = true; // Set the slow ball flag
             displayPowerupText('SLOWWWW');
         }
         else if (selectedPowerup === POWERUP_TYPES.WIDER_BAR && !widePaddleActive) {
-            widePaddleDuration = POWERUP_DURATION;
+            powerupDuration = WIDE_BAR_DURATION;
             setPaddleWidth(paddle.width * 2);
             widePaddleActive = true; // Set the wide paddle flag
             displayPowerupText('WIDE PADDLE');
         }
         else if (selectedPowerup === POWERUP_TYPES.BIG_BALL && !bigBallActive) {
-            bigBallDuration = POWERUP_DURATION;
+            powerupDuration = BIG_BALL_DURATION;
             setBallSize(12);
             bigBallActive = true; // Set the wide paddle flag
             displayPowerupText('BIG BALL');
         }
+        powerupCooldown = POWERUP_COOLDOWN;
     }
 }
 
 function updatePowerupGauge() {
-    if (widePaddleDuration > 0) {
-        --widePaddleDuration;
-        if (widePaddleDuration === 0) {
-            setPaddleWidth(getOriginalPaddleWidth()); // Reset paddle width
-            widePaddleActive = false;
-        }
-    }
+    if (powerupDuration > 0) {
+        --powerupDuration;
 
-    if (slowBallDuration > 0) {
-        --slowBallDuration;
-        if (slowBallDuration === 0) {
-            setBallSpeed(ORIGINAL_BALL_SPEED); // Reset ball speed
-            slowBallActive = false;
-        }
-    }
+        if (powerupDuration === 0) {
+            if (widePaddleActive) {
+                setPaddleWidth(getOriginalPaddleWidth()); // Reset paddle width
+                widePaddleActive = false;
+            }
 
-    if (bigBallDuration > 0) {
-        --bigBallDuration;
-        if (bigBallDuration === 0) {
-            setBallSize(ORIGINAL_BALL_SIZE); // Reset ball speed
-            bigBallActive = false;
+            if (slowBallActive) {
+                setBallSpeed(ORIGINAL_BALL_SPEED); // Reset ball speed
+                slowBallActive = false;
+            }
+
+            if (bigBallActive) {
+                setBallSize(ORIGINAL_BALL_SIZE); // Reset ball speed
+                bigBallActive = false;
+            }
+
+            powerupCooldown = POWERUP_COOLDOWN;
         }
     }
 
@@ -482,41 +547,6 @@ function resetGame() {
     // Restart the game loop
     requestAnimationFrame(loop);
 }
-
-
-//////////////////////////////
-/// UTILITY
-/////////////////////////
-
-let lastFrameTime = 0;
-let frameCount = 0;
-let fps = 0;
-let lastSecond = Date.now();
-
-function animate(currentTime) {
-    // Calculate the time difference
-    let deltaTime = currentTime - lastFrameTime;
-    lastFrameTime = currentTime;
-
-    // Increment the frame count
-    frameCount++;
-
-    // Update the FPS every second
-    if (currentTime - lastSecond >= 1000) {
-        fps = frameCount;
-        frameCount = 0;
-        lastSecond = currentTime;
-
-        // Update FPS display on the page
-        document.getElementById('fpsCounter').innerText = `FPS: ${fps}`;
-    }
-
-    // Request the next frame
-    requestAnimationFrame(animate);
-}
-
-// Start the animation
-//requestAnimationFrame(animate);
 
 //////////////////////////////
 /// DIRECTIONAL MOTION
