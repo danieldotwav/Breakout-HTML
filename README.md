@@ -17,11 +17,17 @@ This repository contains the code for a classic Breakout game implemented in HTM
 
 ## Getting Started
 
-### Controls
+### Desktop Controls
 - Directional Buttons (Left and Right)
 - Pause Menu (Enter Key)
 	- Press Enter to Leave Pause Menu
 	- Level Selection (Press 1, 2, or 3 to render new level)
+
+### Mobile Contols
+- Tap on the paddle to start
+- Drag the paddle left and right to move
+- Tap on the 'LEVEL X' text to cycle between different levels
+- To reset, simply tap on the paddle again
 
 ### Prerequisites
 

@@ -759,6 +759,65 @@ function handleTouchEnd(e) {
     e.preventDefault();
 }
 
+// Get the level element
+const levelElement = document.getElementById('level');
+
+// Attach a touchstart event listener to the level element
+levelElement.addEventListener('touchstart', function (e) {
+    // Prevent default behavior
+    e.preventDefault();
+
+    // Handling level selection logic
+    // You can toggle between levels or show a level selection menu here
+    // For simplicity, let's just cycle through levels 1, 2, and 3
+    if (levelElement.textContent.includes("1")) {
+        resetGame(LVL2);
+        levelElement.textContent = "LEVEL 2";
+    }
+    else if (levelElement.textContent.includes("2")) {
+        resetGame(LVL3);
+        levelElement.textContent = "LEVEL 3";
+    }
+    else if (levelElement.textContent.includes("3")) {
+        resetGame(LVL1);
+        levelElement.textContent = "LEVEL 1";
+    }
+
+    // Resume the game if paused
+    if (isPaused) {
+        isPaused = false;
+        requestAnimationFrame(loop);
+    }
+}, false);
+
+canvas.addEventListener('touchstart', function (e) {
+    if (isGameOver) {
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+
+        const canvasRect = canvas.getBoundingClientRect();
+        const canvasScaleX = canvas.width / canvasRect.width;
+        const canvasScaleY = canvas.height / canvasRect.height;
+
+        const canvasTouchX = (touchX - canvasRect.left) * canvasScaleX;
+        const canvasTouchY = (touchY - canvasRect.top) * canvasScaleY;
+
+        // Check if the touch is within the paddle's bounds
+        if (
+            canvasTouchX >= paddle.x &&
+            canvasTouchX <= paddle.x + paddle.width &&
+            canvasTouchY >= paddle.y &&
+            canvasTouchY <= paddle.y + paddle.height
+        ) {
+            // Restart the game
+            resetGame(getCurrentLevelGrid());
+            isGameOver = false; // Reset the game over state
+        }
+    }
+
+    e.preventDefault();
+}, false);
+
 window.addEventListener('deviceorientation', handleTilt);
 
 function handleTilt(e) {
