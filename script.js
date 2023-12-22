@@ -278,7 +278,7 @@ let score = 0;
 let isGameOver = false;
 let isPaused = false;
 
-createGameGrid(LVL2);
+createGameGrid(LVL1);
 loop();
 
 function loop() {
@@ -348,9 +348,10 @@ function showPauseMenu() {
     context.fillStyle = '#FFFFFF';
     context.font = '18px "Press Start 2P", cursive';
     context.textAlign = 'center';
-    context.fillText('Game Paused', canvas.width / 2, 150);
-    context.fillText('Press Enter to Resume', canvas.width / 2, 200);
-    context.fillText('Press R to Restart', canvas.width / 2, 250);
+    context.fillText('Level Selection', canvas.width / 2, 150);
+    context.fillText('1. Level 1', canvas.width / 2, 200);
+    context.fillText('2. Level 2', canvas.width / 2, 250);
+    context.fillText('3. Level 3', canvas.width / 2, 300);
 }
 
 //////////////////////////////
@@ -470,10 +471,6 @@ function displayPowerupText(text) {
     setTimeout(() => powerupTextElement.style.display = 'none', 5000); // Hide the text after 5 seconds
 }
 
-function displayLevelText(currentLevel) {
-
-}
-
 function checkForRandomPowerupChance() {
     if (Math.random() < POWERUP_CHANCE && !powerupActive && powerupCooldown === 0) {
         powerupActive = true; // Global flag indicating a powerup is active
@@ -554,7 +551,7 @@ function drawPaddle() {
     context.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 }
 
-function resetGame(LevelSelection) {
+function resetGame(levelSelection) {
     // Reset Score
     score = 0;
     updateScore();
@@ -562,11 +559,18 @@ function resetGame(LevelSelection) {
     // Reset the game state flags
     isGameOver = false;
     isPaused = false;
+
     slowBallActive = false;
     widePaddleActive = false;
+    bigBallActive = false;
     powerupActive = false;
+
+    powerupDuration = 0;
+    powerupCooldown = POWERUP_COOLDOWN;
+
     widePaddleDuration = 0;
     slowBallDuration = 0;
+    bigBallDuration = 0;
 
     // Reset any powerups if active
     setBallSpeed(ORIGINAL_BALL_SPEED);
@@ -578,7 +582,7 @@ function resetGame(LevelSelection) {
 
     // Repopulate the bricks array for a new game
     bricks.length = 0; // Clear the existing bricks;
-    createGameGrid(LevelSelection);
+    createGameGrid(levelSelection);
 
     // Reset Ball Position/Velocity
     resetBall();
@@ -634,6 +638,24 @@ document.addEventListener('keydown', function (event) {
         isPaused = !isPaused;
         if (!isPaused) {
             // Resume the game
+            requestAnimationFrame(loop);
+        }
+    }
+    else if (isPaused) {
+        if (event.key === '1') {
+            // Load level 1
+            resetGame(LVL1);
+            isPaused = false; // Unpause the game
+            requestAnimationFrame(loop);
+        } else if (event.key === '2') {
+            // Load level 2
+            resetGame(LVL2);
+            isPaused = false; // Unpause the game
+            requestAnimationFrame(loop);
+        } else if (event.key === '3') {
+            // Load level 3
+            resetGame(LVL3);
+            isPaused = false; // Unpause the game
             requestAnimationFrame(loop);
         }
     }
