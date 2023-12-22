@@ -1,8 +1,3 @@
-// TODO:
-// 1. Fix overlapping text powerup text on mobile
-// 2. Lower powerup chance
-// 3. Increase the interval between powerups
-
 const CANVAS_WIDTH = 400;
 const CANVAS_HEIGHT = 500;
 
@@ -183,6 +178,20 @@ function updateLevelText(newLevel) {
     levelElement.textContent = 'LEVEL ' + newLevel;
 }
 
+function getCurrentLevelGrid() {
+    switch (currentLevel) {
+        case 1:
+            return LVL1;
+            break;
+        case 2:
+            return LVL2;
+            break;
+        case 3:
+            return LVL3;
+            break;
+    }
+}
+
 // Check for collision between two objects using axis-aligned bounding box (AABB)
 function collides(obj1, obj2) {
     return obj1.x < obj2.x + obj2.width &&
@@ -352,6 +361,24 @@ function showPauseMenu() {
     context.fillText('1. Level 1', canvas.width / 2, 200);
     context.fillText('2. Level 2', canvas.width / 2, 250);
     context.fillText('3. Level 3', canvas.width / 2, 300);
+}
+
+function showStartMessage() {
+    // Clear the canvas or draw over the existing frame
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Optional: Add a background or overlay if needed
+    // context.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    // context.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Set text properties
+    context.fillStyle = '#FFFFFF'; // White color for text
+    context.font = '24px "Press Start 2P", cursive'; // Your desired font
+    context.textAlign = 'center';
+    context.textBaseline = 'middle'; // Align text in the middle vertically
+
+    // Draw the text at the center of the canvas
+    context.fillText('-- Press Spacebar To Start --', canvas.width / 2, canvas.height / 2);
 }
 
 //////////////////////////////
@@ -629,7 +656,7 @@ document.addEventListener('keyup', function (e) {
 
 document.addEventListener('keydown', function (e) {
     if (e.key === " " && isGameOver) { // If spacebar is pressed and the game is over
-        resetGame(LVL1);
+        resetGame(getCurrentLevelGrid());
     }
 });
 
@@ -643,20 +670,19 @@ document.addEventListener('keydown', function (event) {
     }
     else if (isPaused) {
         if (event.key === '1') {
-            // Load level 1
+            // Load level 
+            isPaused = false; // Unpause the game
             resetGame(LVL1);
-            isPaused = false; // Unpause the game
-            requestAnimationFrame(loop);
-        } else if (event.key === '2') {
+        }
+        else if (event.key === '2') {
             // Load level 2
+            isPaused = false; // Unpause the game
             resetGame(LVL2);
-            isPaused = false; // Unpause the game
-            requestAnimationFrame(loop);
-        } else if (event.key === '3') {
+        }
+        else if (event.key === '3') {
             // Load level 3
-            resetGame(LVL3);
             isPaused = false; // Unpause the game
-            requestAnimationFrame(loop);
+            resetGame(LVL3);
         }
     }
 });

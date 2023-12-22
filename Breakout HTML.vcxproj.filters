@@ -18,5 +18,8 @@
     <None Include="index.html" />
     <None Include="script.js" />
     <None Include="style.css" />
+    <None Include="README.md">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="index.html" />
+    <None Include="README.md" />
     <None Include="script.js" />
     <None Include="style.css" />
   </ItemGroup>
