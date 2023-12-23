@@ -244,6 +244,7 @@ function hideWinScreen() {
 function resetBall() {
     ball.x = canvas.width / 2;
     ball.y = paddle.y - ball.height; // Position the ball just above the paddle
+    ball.speed = 1;
     ball.dx = ball.speed * (Math.random() < 0.5 ? -1 : 1); // Randomize left or right direction
     ball.dy = -ball.speed; // Always move up
 }
@@ -614,7 +615,7 @@ function resetGame(levelSelection) {
 
     // Reset Ball Position/Velocity
     resetBall();
-    resetPaddle();
+    resetPaddle(); 
 
     // Restart the game loop
     requestAnimationFrame(loop);
