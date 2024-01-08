@@ -91,7 +91,7 @@ const ball = {
     y: 260,
     width: 5,
     height: 5,
-    speed: 1,
+    speed: 3,
     dx: 0, // Ball x velocity
     dy: 0  // Ball y velocity
 };
@@ -262,7 +262,7 @@ function resetPaddle() {
 /// GAME LOOP
 /////////////////////////
 
-const POWERUP_CHANCE = 0.4;
+const POWERUP_CHANCE = 0.5;
 const POWERUP_COOLDOWN = 3;
 
 const WIDE_BAR_DURATION = 6;
